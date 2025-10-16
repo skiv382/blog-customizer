@@ -1,6 +1,7 @@
 .container {
 	position: fixed;
 	top: 31px;
+	z-index: 30;
 	display: flex;
 	flex-shrink: 0;
 	justify-content: center;
