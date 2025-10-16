@@ -28,7 +28,7 @@ export const ArticleParamsForm = ({
 	defaults,
 	onApply,
 }: ArticleParamsFormProps) => {
-	const [isOpen, setIsOpen] = useState<boolean>(false);
+	const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
 	const [formState, setFormState] = useState<ArticleStateType>(initialState);
 	const asideRef = useRef<HTMLElement>(null);
 	const rootRef = useRef<HTMLDivElement>(null);
@@ -37,41 +37,44 @@ export const ArticleParamsForm = ({
 		setFormState(initialState);
 	}, [initialState]);
 
-	const handleToggle = () => setIsOpen((v) => !v);
+	const handleToggle = () => setIsMenuOpen((v) => !v);
 
 	const handleOutsideClick = (e: MouseEvent) => {
-		if (!isOpen) return;
+		if (!isMenuOpen) return;
 		const target = e.target as Node;
 		// Закрываем, если клик вне корневого контейнера (который включает стрелку и aside)
 		if (rootRef.current && !rootRef.current.contains(target)) {
-			setIsOpen(false);
+			setIsMenuOpen(false);
 		}
 	};
 
 	useEffect(() => {
+		if (!isMenuOpen) return;
 		document.addEventListener('click', handleOutsideClick);
 		return () => document.removeEventListener('click', handleOutsideClick);
-	}, [isOpen]);
+	}, [isMenuOpen]);
 
 	const handleSubmit: React.FormEventHandler<HTMLFormElement> = (e) => {
 		e.preventDefault();
 		onApply(formState);
-		setIsOpen(false);
+		setIsMenuOpen(false);
 	};
 
 	const handleReset: React.FormEventHandler<HTMLFormElement> = (e) => {
 		e.preventDefault();
 		setFormState(defaults);
 		onApply(defaults);
-		setIsOpen(false);
+		setIsMenuOpen(false);
 	};
 
 	return (
 		<div ref={rootRef}>
-			<ArrowButton isOpen={isOpen} onClick={handleToggle} />
+			<ArrowButton isOpen={isMenuOpen} onClick={handleToggle} />
 			<aside
 				ref={asideRef}
-				className={clsx(styles.container, { [styles.container_open]: isOpen })}
+				className={clsx(styles.container, {
+					[styles.container_open]: isMenuOpen,
+				})}
 				onClick={(e) => e.stopPropagation()}>
 				<form
 					className={styles.form}
